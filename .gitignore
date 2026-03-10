@@ -39,3 +39,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Prisma
+/src/generated/prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Storybook
+storybook-static
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Claude Code
+.claude/
+CLAUDE.md
+# pnpm
+.pnpm-store/
+pnpm-lock.yaml
+pnpm-workspace.yaml

@@ -1,36 +1,156 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js 開発環境テンプレート
 
-## Getting Started
+Next.js + shadcn/ui + Tailwind CSS をベースとした汎用開発環境です。
 
-First, run the development server:
+## 技術スタック
+
+| カテゴリ | 技術 |
+|---------|------|
+| フレームワーク | Next.js 16 (App Router, Turbopack) |
+| UI | shadcn/ui (base-ui), Tailwind CSS v4 |
+| 状態管理 | Zustand |
+| フォーム | React Hook Form + Zod |
+| データベース | Prisma 7 + SQLite |
+| テスト | Vitest, Playwright |
+| コンポーネント管理 | Storybook 10 |
+
+## セットアップ
 
 ```bash
+# 依存関係のインストール
+npm install
+
+# Prisma クライアント生成
+npm run db:generate
+
+# 開発サーバー起動
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 利用可能なスクリプト
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 開発
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| コマンド | 説明 |
+|---------|------|
+| `npm run dev` | 開発サーバー起動 (Turbopack) |
+| `npm run build` | プロダクションビルド |
+| `npm run start` | プロダクションサーバー起動 |
+| `npm run storybook` | Storybook 起動 (port 6006) |
 
-## Learn More
+### コード品質
 
-To learn more about Next.js, take a look at the following resources:
+| コマンド | 説明 |
+|---------|------|
+| `npm run lint` | ESLint 実行 |
+| `npm run lint:fix` | ESLint 自動修正 |
+| `npm run format` | Prettier フォーマット |
+| `npm run format:check` | Prettier チェック |
+| `npm run stylelint` | Stylelint 実行 |
+| `npm run markuplint` | Markuplint 実行 |
+| `npm run typecheck` | TypeScript 型チェック |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### テスト
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| コマンド | 説明 |
+|---------|------|
+| `npm run test` | Vitest 実行 |
+| `npm run test:ui` | Vitest UI モード |
+| `npm run test:e2e` | Playwright E2E テスト |
 
-## Deploy on Vercel
+### データベース
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| コマンド | 説明 |
+|---------|------|
+| `npm run db:generate` | Prisma クライアント生成 |
+| `npm run db:push` | スキーマをDBに反映 |
+| `npm run db:migrate` | マイグレーション作成・実行 |
+| `npm run db:studio` | Prisma Studio 起動 |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ディレクトリ構成
+
+```
+src/
+├── app/                    # Next.js App Router
+├── components/
+│   ├── ui/                 # shadcn/ui プリミティブ (読み取り専用)
+│   └── shared/             # ラッパーコンポーネント
+├── features/               # 機能別モジュール
+│   └── {feature-name}/
+│       ├── components/     # 機能固有コンポーネント
+│       ├── hooks/          # 機能固有フック
+│       ├── stores/         # 機能固有ストア
+│       └── types/          # 機能固有型定義
+├── hooks/                  # 共通カスタムフック
+├── lib/                    # ユーティリティ
+├── stores/                 # グローバルストア
+├── types/                  # 共通型定義
+└── generated/              # 自動生成ファイル (Prisma等)
+```
+
+## コンポーネント設計 (防波堤パターン)
+
+3層構造でコンポーネントを管理します。
+
+### 1. ui/ (プリミティブ層)
+shadcn/ui が生成するコンポーネント。**直接編集禁止**。
+
+### 2. shared/ (ラッパー層)
+ui/ をラップし、プロジェクト共通の機能を追加。
+
+```tsx
+// 例: AppButton - ローディング状態を追加
+import { AppButton } from "@/components/shared/AppButton";
+
+<AppButton isLoading={isPending}>送信</AppButton>
+```
+
+### 3. features/ (ドメイン層)
+機能固有のコンポーネント。shared/ を使用して構築。
+
+```tsx
+// 例: features/auth/components/LoginForm.tsx
+import { AppButton } from "@/components/shared/AppButton";
+import { AppInput } from "@/components/shared/AppInput";
+```
+
+## shadcn/ui コンポーネントの追加
+
+```bash
+# コンポーネント追加
+npx shadcn@latest add button
+
+# ラッパー作成 (src/components/shared/AppXxx/)
+```
+
+## 環境変数
+
+`.env.local` を作成:
+
+```env
+DATABASE_URL="file:./prisma/dev.db"
+```
+
+## GitHub Actions
+
+PRを作成すると以下のチェックが自動実行されます:
+
+- ESLint
+- Prettier
+- Stylelint
+- Markuplint
+- TypeScript 型チェック
+
+## 注意事項
+
+- **Node.js 24**: markuplint は Node.js 24 で動作しません (ESM互換性問題)。ローカルでは `npm run markuplint` をスキップするか、Node.js 22 を使用してください。CI では Node.js 22 を使用しています。
+- **base-ui**: shadcn/ui は base-ui ベースに移行しています。`asChild` の代わりに `render` プロパティを使用します。
+
+## デプロイ (Railway)
+
+`next.config.ts` に `output: "standalone"` が設定済みです。
+
+```bash
+# Railwayにデプロイ
+railway up
+```

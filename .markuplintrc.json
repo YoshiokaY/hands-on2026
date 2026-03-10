@@ -1,0 +1,14 @@
+{
+  "extends": ["markuplint:recommended-react"],
+  "parser": {
+    ".tsx$": "@markuplint/jsx-parser"
+  },
+  "specs": {
+    ".tsx$": "@markuplint/react-spec"
+  },
+  "excludeFiles": ["node_modules/**", ".next/**", "storybook-static/**", "src/generated/**"],
+  "rules": {
+    "character-reference": false,
+    "no-hard-code-id": false
+  }
+}
