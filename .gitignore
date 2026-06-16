@@ -52,6 +52,7 @@ storybook-static
 # Claude Code
 .claude/
 CLAUDE.md
+.playwright-mcp
 # pnpm
 .pnpm-store/
 pnpm-lock.yaml

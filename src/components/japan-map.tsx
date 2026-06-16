@@ -1,113 +1,38 @@
-"use client";
-
 interface JapanMapProps {
   onSelectRegion: (code: string, name: string) => void;
 }
 
 /**
- * 簡易マップを構成する9つの地方区分（ハンズオン用ピックアップ）。
- * code は各地方の代表都道府県の気象庁エリアコード、
- * path / lx / ly はSVGマップ（viewBox 0 0 400 560）上の図形と
- * ラベル中心座標を表す。
+ * 簡易マップを構成する9つの地方区分
+ * skewX(-12) による横ズレ（変形による飛び出し）を数学的に逆算し、
+ * 傾けた状態でもパーツ同士が重ならず、12pxの隙間が均一に空くように再設計しました。
  */
 const REGIONS = [
-  {
-    code: "016000",
-    label: "北海道",
-    name: "北海道（札幌）",
-    path: "M306 44 L356 40 L380 78 L364 116 L320 120 L300 92 L300 64 Z",
-    lx: 336,
-    ly: 86,
-  },
-  {
-    code: "040000",
-    label: "東北",
-    name: "東北（宮城県）",
-    path: "M300 132 L340 138 L342 196 L320 224 L292 214 L286 168 Z",
-    lx: 314,
-    ly: 182,
-  },
-  {
-    code: "130000",
-    label: "関東",
-    name: "関東（東京都）",
-    path: "M300 230 L334 232 L336 272 L308 288 L284 274 L286 244 Z",
-    lx: 310,
-    ly: 262,
-  },
-  {
-    code: "230000",
-    label: "中部",
-    name: "中部（愛知県）",
-    path: "M236 232 L292 236 L286 288 L246 300 L214 280 L218 248 Z",
-    lx: 250,
-    ly: 270,
-  },
-  {
-    code: "270000",
-    label: "近畿",
-    name: "近畿（大阪府）",
-    path: "M186 272 L228 276 L224 314 L190 324 L166 304 L168 282 Z",
-    lx: 196,
-    ly: 300,
-  },
-  {
-    code: "340000",
-    label: "中国",
-    name: "中国（広島県）",
-    path: "M112 286 L172 290 L170 322 L130 332 L104 316 L104 296 Z",
-    lx: 138,
-    ly: 310,
-  },
-  {
-    code: "380000",
-    label: "四国",
-    name: "四国（愛媛県）",
-    path: "M156 336 L200 338 L202 366 L170 376 L146 360 Z",
-    lx: 176,
-    ly: 358,
-  },
-  {
-    code: "400000",
-    label: "九州",
-    name: "九州（福岡県）",
-    path: "M92 320 L136 324 L140 372 L114 402 L82 384 L78 344 Z",
-    lx: 108,
-    ly: 362,
-  },
-  {
-    code: "471000",
-    label: "沖縄",
-    name: "沖縄県（那覇）",
-    path: "M40 474 L78 470 L82 500 L52 520 L30 502 Z",
-    lx: 54,
-    ly: 498,
-  },
+  { code: "016000", label: "北海道", name: "北海道（札幌）", cx: 775, cy: 106, w: 240, h: 160, color: "#0284c7" },
+  { code: "040000", label: "東北", name: "東北（宮城県）", cx: 736, cy: 288, w: 200, h: 180, color: "#0d9488" },
+  { code: "130000", label: "関東", name: "関東（東京都）", cx: 817, cy: 450, w: 140, h: 120, color: "#4f46e5" },
+  { code: "230000", label: "中部", name: "中部（愛知県）", cx: 665, cy: 450, w: 140, h: 120, color: "#059669" },
+  { code: "270000", label: "近畿", name: "近畿（大阪府）", cx: 523, cy: 450, w: 120, h: 120, color: "#d97706" },
+  { code: "340000", label: "中国", name: "中国（広島県）", cx: 381, cy: 450, w: 140, h: 120, color: "#db2777" },
+  { code: "380000", label: "四国", name: "四国（愛媛県）", cx: 497, cy: 572, w: 120, h: 100, color: "#7c3aed" },
+  { code: "400000", label: "九州", name: "九州（福岡県）", cx: 347, cy: 612, w: 140, h: 180, color: "#dc2626" },
+  { code: "471000", label: "沖縄", name: "沖縄県（那覇）", cx: 185, cy: 754, w: 100, h: 80, color: "#0891b2" },
 ] as const;
 
 export function JapanMap({ onSelectRegion }: JapanMapProps) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-xl border bg-white p-6 shadow-sm">
       <p className="text-muted-foreground text-sm">
-        地図上の地方を選択してください
+        エリアを選択してください
       </p>
 
-      <div className="mx-auto w-full max-w-md">
+      <div className="mx-auto w-full max-w-xl">
         <svg
-          viewBox="0 0 400 560"
+          viewBox="0 0 1000 820"
           className="h-auto w-full"
           role="group"
           aria-label="日本地図（地方区分）"
         >
-          {/* 九州から沖縄への距離を示す破線 */}
-          <path
-            d="M104 400 L66 470"
-            fill="none"
-            stroke="#cbd5e1"
-            strokeWidth="2"
-            strokeDasharray="5 6"
-          />
-
           {REGIONS.map((region) => {
             const handleSelect = () => onSelectRegion(region.code, region.name);
             return (
@@ -125,17 +50,26 @@ export function JapanMap({ onSelectRegion }: JapanMapProps) {
                 }}
                 className="group cursor-pointer outline-none"
               >
-                <path
-                  d={region.path}
-                  className="fill-slate-200 stroke-white transition-colors group-hover:fill-primary group-focus-visible:fill-primary group-focus-visible:stroke-slate-900"
-                  strokeWidth={2}
-                />
+                {/* 角丸矩形を skewX で傾けて「平行四辺形パーツ」にする */}
+                <g transform={`translate(${region.cx} ${region.cy}) skewX(-12)`}>
+                  <rect
+                    x={-region.w / 2}
+                    y={-region.h / 2}
+                    width={region.w}
+                    height={region.h}
+                    rx={20}
+                    fill={region.color}
+                    strokeWidth={4}
+                    className="stroke-white transition-opacity group-hover:opacity-80 group-focus-visible:stroke-slate-900"
+                  />
+                </g>
                 <text
-                  x={region.lx}
-                  y={region.ly}
+                  x={region.cx}
+                  y={region.cy}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  className="pointer-events-none fill-slate-600 text-[13px] font-medium group-hover:fill-white group-focus-visible:fill-white"
+                  fontSize={26}
+                  className="pointer-events-none fill-white font-medium"
                 >
                   {region.label}
                 </text>

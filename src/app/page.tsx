@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { JmaForecastResponse } from "@/types";
+import { getWeatherIcon } from "@/lib/weather";
 
 /** ハンズオン用の固定トークン（Route Handler 側の API_SECRET_TOKEN と一致させる） */
 const API_SECRET_TOKEN = "HANDSON_SECRET_TOKEN_2026";
@@ -64,11 +65,8 @@ export default function Home() {
       {/* 編集体験用: ここのテキストや色を参加者に書き換えてもらう */}
       <header className="mb-12 text-center">
         <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-slate-900 lg:text-4xl">
-          簡易日本地図・気象予報アプリ
+          気象予報アプリ
         </h1>
-        <p className="text-muted-foreground">
-          Next.js + shadcn/ui + Vercel デプロイ・CI/CD ハンズオン教材
-        </p>
       </header>
 
       <JapanMap onSelectRegion={handleSelectRegion} />
@@ -94,30 +92,36 @@ export default function Home() {
 
             {!loading && !error && forecast && area && (
               <div className="space-y-4 text-sm text-slate-700">
-                <p className="rounded bg-slate-100 p-2 text-center font-semibold">
-                  報告日時:{" "}
-                  {new Date(forecast.reportDatetime).toLocaleString("ja-JP")}
-                </p>
-
-                <dl className="space-y-2">
-                  {timeSeries?.timeDefines.slice(0, 3).map((date, i) => (
-                    <div
-                      key={date}
-                      className="rounded-lg border bg-slate-50 p-3"
-                    >
-                      <dt className="text-primary mb-1 font-bold">
-                        {new Date(date).toLocaleDateString("ja-JP", {
-                          month: "long",
-                          day: "numeric",
-                          weekday: "short",
-                        })}
-                      </dt>
-                      <dd className="whitespace-pre-wrap">
-                        {area.weathers?.[i] ?? "データがありません"}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
+                <ul className="space-y-2">
+                  {timeSeries?.timeDefines.slice(0, 3).map((date, i) => {
+                    const { Icon, colorClass, label } = getWeatherIcon(
+                      Number(area.weatherCodes?.[i]),
+                    );
+                    return (
+                      <li
+                        key={date}
+                        className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3"
+                      >
+                        <Icon
+                          className={`size-9 shrink-0 ${colorClass}`}
+                          aria-label={label}
+                        />
+                        <div className="min-w-0">
+                          <p className="text-primary font-bold">
+                            {new Date(date).toLocaleDateString("ja-JP", {
+                              month: "long",
+                              day: "numeric",
+                              weekday: "short",
+                            })}
+                          </p>
+                          <p className="whitespace-pre-wrap">
+                            {area.weathers?.[i] ?? "データがありません"}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             )}
           </div>
