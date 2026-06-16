@@ -2,7 +2,11 @@
   "name": "next-dev",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
+    "preinstall": "npx only-allow npm",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",

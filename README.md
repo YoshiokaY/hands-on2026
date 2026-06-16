@@ -130,7 +130,7 @@ PRを作成すると以下のチェックが自動実行されます:
 
 ## 注意事項
 
-- **Node.js 24**: markuplint は Node.js 24 で動作しません (ESM互換性問題)。ローカルでは `npm run markuplint` をスキップするか、Node.js 22 を使用してください。CI では Node.js 22 を使用しています。
+- **Node.js バージョン**: 本プロジェクトは Node.js 22 (LTS) を使用します。バージョンは `.nvmrc` / `.node-version` に固定しており、nvm・fnm・nodenv で自動切り替えできます（CI / Vercel も同バージョンを使用）。
 - **base-ui**: shadcn/ui は base-ui ベースに移行しています。`asChild` の代わりに `render` プロパティを使用します。
 
 ## デプロイ (Vercel)

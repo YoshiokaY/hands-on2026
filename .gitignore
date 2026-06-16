@@ -53,9 +53,6 @@ storybook-static
 .claude/
 CLAUDE.md
 .playwright-mcp
-# pnpm
-.pnpm-store/
-pnpm-lock.yaml
-pnpm-workspace.yaml
+# package-lock.json はコミットする（npm ci / 再現性のため）
 
 docs
