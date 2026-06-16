@@ -2,9 +2,13 @@
   "name": "next-dev",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
+    "preinstall": "npx only-allow npm",
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -18,21 +22,30 @@
     "test:e2e": "playwright test",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.css": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{json,mjs,cjs}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
     "@hookform/resolvers": "^5.2.2",
-    "@prisma/adapter-better-sqlite3": "^7.4.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.577.0",
-    "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "lucide-react": "^1.18.0",
+    "next": "16.2.9",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-hook-form": "^7.71.2",
     "shadcn": "^4.0.2",
     "tailwind-merge": "^3.5.0",
@@ -45,37 +58,35 @@
     "@markuplint/jsx-parser": "^4.7.23",
     "@markuplint/react-spec": "^4.5.23",
     "@playwright/test": "^1.58.2",
-    "@prisma/client": "^7.4.2",
     "@storybook/addon-a11y": "^10.2.17",
     "@storybook/addon-docs": "^10.2.17",
     "@storybook/addon-onboarding": "^10.2.17",
     "@storybook/addon-vitest": "^10.2.17",
     "@storybook/nextjs-vite": "^10.2.17",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^22.19.21",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@typescript-eslint/parser": "^8.57.0",
     "@vitest/browser-playwright": "^4.0.18",
     "@vitest/coverage-v8": "^4.0.18",
-    "better-sqlite3": "^12.6.2",
-    "dotenv": "^17.3.1",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "16.2.9",
     "eslint-plugin-storybook": "^10.2.17",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "markuplint": "^4.14.1",
     "playwright": "^1.58.2",
     "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.7.2",
-    "prisma": "^7.4.2",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "storybook": "^10.2.17",
     "stylelint": "^17.4.0",
     "stylelint-config-recess-order": "^7.6.1",
     "stylelint-config-standard": "^40.0.0",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "vite": "^7.3.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
     "vitest": "^4.0.18"
   }
 }

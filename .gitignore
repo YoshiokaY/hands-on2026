@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,11 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# Prisma
-/src/generated/prisma
-prisma/*.db
-prisma/*.db-journal
 
 # Storybook
 storybook-static
@@ -56,7 +52,7 @@ storybook-static
 # Claude Code
 .claude/
 CLAUDE.md
-# pnpm
-.pnpm-store/
-pnpm-lock.yaml
-pnpm-workspace.yaml
+.playwright-mcp
+# package-lock.json はコミットする（npm ci / 再現性のため）
+
+docs
