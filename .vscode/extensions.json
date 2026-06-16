@@ -3,8 +3,7 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "stylelint.vscode-stylelint",
-    "bradlc.vscode-tailwindcss",
-    "prisma.prisma"
+    "bradlc.vscode-tailwindcss"
   ],
   "unwantedRecommendations": []
 }

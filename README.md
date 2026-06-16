@@ -10,7 +10,6 @@ Next.js + shadcn/ui + Tailwind CSS をベースとした汎用開発環境です
 | UI | shadcn/ui (base-ui), Tailwind CSS v4 |
 | 状態管理 | Zustand |
 | フォーム | React Hook Form + Zod |
-| データベース | Prisma 7 + SQLite |
 | テスト | Vitest, Playwright |
 | コンポーネント管理 | Storybook 10 |
 
@@ -19,9 +18,6 @@ Next.js + shadcn/ui + Tailwind CSS をベースとした汎用開発環境です
 ```bash
 # 依存関係のインストール
 npm install
-
-# Prisma クライアント生成
-npm run db:generate
 
 # 開発サーバー起動
 npm run dev
@@ -58,15 +54,6 @@ npm run dev
 | `npm run test:ui` | Vitest UI モード |
 | `npm run test:e2e` | Playwright E2E テスト |
 
-### データベース
-
-| コマンド | 説明 |
-|---------|------|
-| `npm run db:generate` | Prisma クライアント生成 |
-| `npm run db:push` | スキーマをDBに反映 |
-| `npm run db:migrate` | マイグレーション作成・実行 |
-| `npm run db:studio` | Prisma Studio 起動 |
-
 ## ディレクトリ構成
 
 ```
@@ -84,8 +71,7 @@ src/
 ├── hooks/                  # 共通カスタムフック
 ├── lib/                    # ユーティリティ
 ├── stores/                 # グローバルストア
-├── types/                  # 共通型定義
-└── generated/              # 自動生成ファイル (Prisma等)
+└── types/                  # 共通型定義
 ```
 
 ## コンポーネント設計 (防波堤パターン)
@@ -128,7 +114,8 @@ npx shadcn@latest add button
 `.env.local` を作成:
 
 ```env
-DATABASE_URL="file:./prisma/dev.db"
+# 内部API (/api/weather) の認証に使用するシークレットトークン
+API_SECRET_TOKEN="your-secret-token"
 ```
 
 ## GitHub Actions
@@ -146,11 +133,10 @@ PRを作成すると以下のチェックが自動実行されます:
 - **Node.js 24**: markuplint は Node.js 24 で動作しません (ESM互換性問題)。ローカルでは `npm run markuplint` をスキップするか、Node.js 22 を使用してください。CI では Node.js 22 を使用しています。
 - **base-ui**: shadcn/ui は base-ui ベースに移行しています。`asChild` の代わりに `render` プロパティを使用します。
 
-## デプロイ (Railway)
+## デプロイ (Vercel)
 
-`next.config.ts` に `output: "standalone"` が設定済みです。
+GitHub リポジトリを Vercel に連携すると、`main` への push で自動デプロイされます。
 
-```bash
-# Railwayにデプロイ
-railway up
-```
+1. [Vercel](https://vercel.com/) でリポジトリをインポート
+2. 環境変数 `API_SECRET_TOKEN` を設定
+3. デプロイ（以降は push で自動再デプロイ）

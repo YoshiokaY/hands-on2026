@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,11 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# Prisma
-/src/generated/prisma
-prisma/*.db
-prisma/*.db-journal
 
 # Storybook
 storybook-static
@@ -60,3 +56,5 @@ CLAUDE.md
 .pnpm-store/
 pnpm-lock.yaml
 pnpm-workspace.yaml
+
+docs
