@@ -54,6 +54,8 @@ npm run dev
 | `npm run test:ui` | Vitest UI モード |
 | `npm run test:e2e` | Playwright E2E テスト |
 
+> テストの構成と各シナリオは [tests/README.md](tests/README.md) を参照してください。
+
 ## ディレクトリ構成
 
 ```
