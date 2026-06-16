@@ -1,65 +1,128 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { JapanMap } from "@/components/japan-map";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import type { JmaForecastResponse } from "@/types";
+
+/** ハンズオン用の固定トークン（Route Handler 側の API_SECRET_TOKEN と一致させる） */
+const API_SECRET_TOKEN = "HANDSON_SECRET_TOKEN_2026";
 
 export default function Home() {
+  const [selectedName, setSelectedName] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [weatherData, setWeatherData] = useState<JmaForecastResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSelectRegion = async (code: string, name: string) => {
+    setSelectedName(name);
+    setIsOpen(true);
+    setLoading(true);
+    setError(null);
+    setWeatherData(null);
+
+    try {
+      const response = await fetch(`/api/weather?code=${code}`, {
+        headers: {
+          "X-API-Secret-Token": API_SECRET_TOKEN,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error(
+            "認証エラー（401 Unauthorized）が発生しました。Vercelの環境変数に『API_SECRET_TOKEN』が正しく設定されているか確認し、再デプロイしてください。",
+          );
+        }
+        throw new Error(`エラーが発生しました (Status: ${response.status})`);
+      }
+
+      const data: JmaForecastResponse = await response.json();
+      setWeatherData(data);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "データの取得に失敗しました。",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 短期予報（先頭要素）の最初のエリアから、日付ごとの天気概況を取り出す
+  const forecast = weatherData?.[0];
+  const timeSeries = forecast?.timeSeries?.[0];
+  const area = timeSeries?.areas?.[0];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between bg-white px-16 py-32 sm:items-start dark:bg-black">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl leading-10 font-semibold tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="bg-foreground text-background flex h-12 w-full items-center justify-center gap-2 rounded-full px-5 transition-colors hover:bg-[#383838] md:w-[158px] dark:hover:bg-[#ccc]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] md:w-[158px] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="container mx-auto max-w-4xl px-4 py-12">
+      {/* 編集体験用: ここのテキストや色を参加者に書き換えてもらう */}
+      <header className="mb-12 text-center">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-slate-900 lg:text-4xl">
+          簡易日本地図・気象予報アプリ
+        </h1>
+        <p className="text-muted-foreground">
+          Next.js + shadcn/ui + Vercel デプロイ・CI/CD ハンズオン教材
+        </p>
+      </header>
+
+      <JapanMap onSelectRegion={handleSelectRegion} />
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-120">
+          <DialogHeader>
+            <DialogTitle>{selectedName} の気象予報</DialogTitle>
+          </DialogHeader>
+
+          <div className="py-2">
+            {loading && (
+              <p className="animate-pulse text-center text-slate-500">
+                気象データを読み込み中...
+              </p>
+            )}
+
+            {error && (
+              <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border p-4 text-sm whitespace-pre-wrap">
+                {error}
+              </div>
+            )}
+
+            {!loading && !error && forecast && area && (
+              <div className="space-y-4 text-sm text-slate-700">
+                <p className="rounded bg-slate-100 p-2 text-center font-semibold">
+                  報告日時:{" "}
+                  {new Date(forecast.reportDatetime).toLocaleString("ja-JP")}
+                </p>
+
+                <dl className="space-y-2">
+                  {timeSeries?.timeDefines.slice(0, 3).map((date, i) => (
+                    <div
+                      key={date}
+                      className="rounded-lg border bg-slate-50 p-3"
+                    >
+                      <dt className="text-primary mb-1 font-bold">
+                        {new Date(date).toLocaleDateString("ja-JP", {
+                          month: "long",
+                          day: "numeric",
+                          weekday: "short",
+                        })}
+                      </dt>
+                      <dd className="whitespace-pre-wrap">
+                        {area.weathers?.[i] ?? "データがありません"}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </main>
   );
 }
