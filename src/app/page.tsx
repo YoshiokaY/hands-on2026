@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { JapanMap } from "@/components/japan-map";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { JmaForecastResponse } from "@/types";
 import { getWeatherIcon } from "@/lib/weather";
 
@@ -38,7 +33,7 @@ export default function Home() {
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error(
-            "認証エラー（401 Unauthorized）が発生しました。Vercelの環境変数に『API_SECRET_TOKEN』が正しく設定されているか確認し、再デプロイしてください。",
+            "認証エラー（401 Unauthorized）が発生しました。Vercelの環境変数に『API_SECRET_TOKEN』が正しく設定されているか確認し、再デプロイしてください。"
           );
         }
         throw new Error(`エラーが発生しました (Status: ${response.status})`);
@@ -47,9 +42,7 @@ export default function Home() {
       const data: JmaForecastResponse = await response.json();
       setWeatherData(data);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "データの取得に失敗しました。",
-      );
+      setError(err instanceof Error ? err.message : "データの取得に失敗しました。");
     } finally {
       setLoading(false);
     }
@@ -79,9 +72,7 @@ export default function Home() {
 
           <div className="py-2">
             {loading && (
-              <p className="animate-pulse text-center text-slate-500">
-                気象データを読み込み中...
-              </p>
+              <p className="animate-pulse text-center text-slate-500">気象データを読み込み中...</p>
             )}
 
             {error && (
@@ -95,17 +86,14 @@ export default function Home() {
                 <ul className="space-y-2">
                   {timeSeries?.timeDefines.slice(0, 3).map((date, i) => {
                     const { Icon, colorClass, label } = getWeatherIcon(
-                      Number(area.weatherCodes?.[i]),
+                      Number(area.weatherCodes?.[i])
                     );
                     return (
                       <li
                         key={date}
                         className="flex items-center gap-3 rounded-lg border bg-slate-50 p-3"
                       >
-                        <Icon
-                          className={`size-9 shrink-0 ${colorClass}`}
-                          aria-label={label}
-                        />
+                        <Icon className={`size-9 shrink-0 ${colorClass}`} aria-label={label} />
                         <div className="min-w-0">
                           <p className="text-primary font-bold">
                             {new Date(date).toLocaleDateString("ja-JP", {

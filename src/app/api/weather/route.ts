@@ -17,16 +17,13 @@ export async function GET(request: NextRequest) {
   if (!serverToken || clientToken !== serverToken) {
     return NextResponse.json(
       { error: "Unauthorized: APIシークレットが未設定、または不一致です。" },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
   // 2. エリアコードの簡易バリデーション（6桁の数字かチェック）
   if (!areaCode || !/^\d{6}$/.test(areaCode)) {
-    return NextResponse.json(
-      { error: "Bad Request: 不正なエリアコードです。" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Bad Request: 不正なエリアコードです。" }, { status: 400 });
   }
 
   try {

@@ -1,10 +1,4 @@
-import {
-  Cloud,
-  CloudRain,
-  Snowflake,
-  Sun,
-  type LucideIcon,
-} from "lucide-react";
+import { Cloud, CloudRain, Snowflake, Sun, type LucideIcon } from "lucide-react";
 
 /**
  * 気象庁の天気コード（3桁）を晴れ／曇り／雨／雪の4分類アイコンに対応づける。
