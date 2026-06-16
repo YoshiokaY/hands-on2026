@@ -138,5 +138,28 @@ PRを作成すると以下のチェックが自動実行されます:
 GitHub リポジトリを Vercel に連携すると、`main` への push で自動デプロイされます。
 
 1. [Vercel](https://vercel.com/) でリポジトリをインポート
-2. 環境変数 `API_SECRET_TOKEN` を設定
+2. 環境変数 `API_SECRET_TOKEN` を設定（**Production / Preview の両方**に設定すること。詳細は下記）
 3. デプロイ（以降は push で自動再デプロイ）
+
+### 環境変数のスコープに注意
+
+Vercel の環境変数は **Production / Preview / Development** で別々に管理されます。
+`API_SECRET_TOKEN` を Production だけに設定すると、**プレビュー環境では未設定扱いとなり、地方クリック時に 401 になります**。プレビューでも天気を取得できるよう、**Preview 環境にも同じ変数を設定**してください（本番と検証で別トークンにする運用も可能です）。
+
+### プレビューで確認してからマージする（推奨フロー）
+
+`main` 以外のブランチ / PR は、Vercel が自動で**プレビューデプロイ**を作成します。本番マージ前に実物を確認できます。
+
+1. 作業用ブランチを作成して編集する（例: 地図の色を変更）
+   ```bash
+   git switch -c feature/change-map-color
+   # 編集してコミット
+   git push -u origin feature/change-map-color
+   ```
+2. `main` 向けに Pull Request を作成
+3. PR 上で次の 2 つが揃うのを待つ
+   - **CI チェック**（lint / build / test 等）がすべて green
+   - **Vercel の Preview URL**（bot が PR にコメント）で表示を確認
+4. 問題なければ `main` にマージ → 本番へ自動デプロイ
+
+> ブランチ保護により、CI が通らない PR は `main` にマージできません。「CI 緑 + プレビュー目視確認 → マージ」が実践的なレビューフローになります。

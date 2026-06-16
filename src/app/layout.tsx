@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://hands-on2026.vercel.app";
-const SITE_TITLE = "簡易日本地図・気象予報アプリ";
+const SITE_URL = "";
+const SITE_TITLE = "気象予報アプリ";
 const SITE_DESCRIPTION =
   "日本地図上の地方を選んで天気予報を表示する、Vercel デプロイ・CI/CD ハンズオン教材アプリ";
 
