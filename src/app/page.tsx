@@ -5,6 +5,7 @@ import { JapanMap } from "@/components/japan-map";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { JmaForecastResponse } from "@/types";
 import { getWeatherIcon } from "@/lib/weather";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 /** ハンズオン用の固定トークン（Route Handler 側の API_SECRET_TOKEN と一致させる） */
 const API_SECRET_TOKEN = "HANDSON_SECRET_TOKEN_2026";
@@ -55,6 +56,7 @@ export default function Home() {
 
   return (
     <main className="container mx-auto max-w-4xl px-4 py-12">
+      <SpeedInsights />
       {/* 編集体験用: ここのテキストや色を参加者に書き換えてもらう */}
       <header className="mb-12 text-center">
         <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-slate-900 lg:text-4xl">
