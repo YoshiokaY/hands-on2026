@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { bumpRegion } from "@/lib/redis";
 
 /** クライアントとサーバーで照合する認証ヘッダー名 */
 const API_SECRET_HEADER = "X-API-Secret-Token";
@@ -25,6 +26,9 @@ export async function GET(request: NextRequest) {
   if (!areaCode || !/^\d{6}$/.test(areaCode)) {
     return NextResponse.json({ error: "Bad Request: 不正なエリアコードです。" }, { status: 400 });
   }
+
+  // 認証済みの有効なリクエストとして、地方のアクセス数を集計（Redis 未設定なら no-op）
+  await bumpRegion(areaCode);
 
   try {
     // 3. 気象庁APIへリクエストをプロキシ
