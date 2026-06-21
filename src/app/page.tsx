@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { JapanMap } from "@/components/japan-map";
+import { RegionRanking } from "@/components/region-ranking";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { JmaForecastResponse } from "@/types";
 import { getWeatherIcon } from "@/lib/weather";
@@ -15,6 +16,8 @@ export default function Home() {
   const [weatherData, setWeatherData] = useState<JmaForecastResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // ランキング再取得用のシグナル（地方クリック成功ごとに増やす）
+  const [rankingRefresh, setRankingRefresh] = useState(0);
 
   const handleSelectRegion = async (code: string, name: string) => {
     setSelectedName(name);
@@ -41,6 +44,8 @@ export default function Home() {
 
       const data: JmaForecastResponse = await response.json();
       setWeatherData(data);
+      // 集計が進んだのでランキングを最新化
+      setRankingRefresh((n) => n + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "データの取得に失敗しました。");
     } finally {
@@ -63,6 +68,8 @@ export default function Home() {
       </header>
 
       <JapanMap onSelectRegion={handleSelectRegion} />
+
+      <RegionRanking refreshSignal={rankingRefresh} />
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-120">
