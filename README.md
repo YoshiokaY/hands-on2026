@@ -165,3 +165,29 @@ Vercel の環境変数は **Production / Preview / Development** で別々に管
 4. 問題なければ `main` にマージ → 本番へ自動デプロイ
 
 > ブランチ保護により、CI が通らない PR は `main` にマージできません。「CI 緑 + プレビュー目視確認 → マージ」が実践的なレビューフローになります。
+
+## バックエンドストレージ（任意）
+
+Vercel は純正ストレージ（Edge Config / Blob）と、Marketplace 連携のマネージド DB（Upstash Redis / Neon Postgres 等）を提供します。本アプリでは体験用に2つを組み込んでいます。**いずれも未設定でもアプリは動作します**（該当機能を自動でスキップ）。
+
+### Upstash Redis — 地方アクセスランキング
+
+地方をクリックするたびに `/api/weather` 内でアクセス数を集計し（`ZINCRBY`）、地図の下に人気ランキングを表示します。
+
+1. Vercel の **Storage（または Marketplace）→ Upstash Redis** をプロジェクトに追加
+2. 環境変数（`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`）が自動で注入される
+3. 再デプロイ → 地方をクリックするとランキングが集計・表示される
+
+> ローカルで試す場合は `.env.local` に上記2変数を設定してください（未設定ならランキングは非表示）。
+
+### Edge Config — お知らせバナー
+
+サイト上部のお知らせバナーを **Edge Config の値で制御**します。値を変更すると **再デプロイなしで即時反映**されるのが特徴です。
+
+1. Vercel の **Storage → Edge Config** でストアを作成し、プロジェクトに連携（`EDGE_CONFIG` が自動注入される）
+2. ストアに `announcement` キーを登録
+   - 文字列: `"メンテナンスを予定しています"`
+   - もしくはオブジェクト: `{ "message": "...", "enabled": true }`（`enabled: false` で非表示）
+3. 値を編集 → サイトを再読み込みすると、再デプロイなしでバナーが変わる
+
+> どちらの環境変数も、Production / Preview の両方に効かせたい場合は両環境へ設定してください。
